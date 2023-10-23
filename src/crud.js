@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from './fbconfig'; 
-import { addDoc, collection, getDocs } from 'firebase/firestore'; 
+import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore'; 
 
 function CRUD() {
   const [dataItem, setDataItem] = useState("");
@@ -8,8 +8,10 @@ function CRUD() {
   const [dataDescription, setDataDescription] = useState("");
   const [dataContainment, setDataContainment] = useState("");
   const [readData, setReadData] = useState([]);
+  const [id, setId] = useState("");
   const OurCollection = collection(db, "subjects");
 
+  // CRUD Create functionality
   const crudCreate = async () => {
     try {
       await addDoc(OurCollection, {
@@ -19,7 +21,7 @@ function CRUD() {
         containment: dataContainment
       });
 
-      // Clear input fields after successful create
+      // Clear input fields after a successful create
       setDataItem("");
       setDataClass("");
       setDataDescription("");
@@ -27,6 +29,31 @@ function CRUD() {
     } catch (error) {
       console.error("Error creating document:", error);
     }
+  }
+
+  // CRUD delete functionality
+  const crudDelete = async (id) => {
+    const docToDelete = doc(db, "subjects", id);
+    await deleteDoc(docToDelete);
+  }
+
+  // CRUD Update/Edit Functionality
+  const crudUpdate = async () => {
+    const updateData = doc(db, "subjects", id);
+    await updateDoc(updateData, {
+      Item: dataItem,
+      scpClass: dataScpClass,
+      description: dataDescription,
+      containment: dataContainment
+    });
+  }
+
+  const showEdit = async (id, item, scpClass, description, containment) => {
+    setDataItem(item);
+    setDataClass(scpClass);
+    setDataDescription(description);
+    setDataContainment(containment);
+    setId(id);
   }
 
   useEffect(() => {
@@ -40,25 +67,26 @@ function CRUD() {
       }
     }
     getData();
-  }, []); 
+  }, [OurCollection]);
 
   return (
-    <>
-      <input value={dataItem} onChange={(item) => setDataItem(item.target.value)} placeholder="Item" />
-      <br />
-      <br />
-      <input value={dataScpClass} onChange={(scpClass) => setDataClass(scpClass.target.value)} placeholder="class" /> 
-      <br />
-      <br />
-      <input value={dataDescription} onChange={(description) => setDataDescription(description.target.value)} placeholder="Description" />
-      <br />
-      <br />
-      <input value={dataContainment} onChange={(containment) => setDataContainment(containment.target.value)} placeholder="Containment" />
-      <br />
-      <br />
-      <button onClick={crudCreate}>Create new document</button>
+    <div className="container">
+      <h1 className="header">SCP FILES</h1>
 
-      <div>
+      <div className="input-container">
+        <input className="input-field" value={dataItem} onChange={(e) => setDataItem(e.target.value)} placeholder="Item" />
+        <br />
+        <input className="input-field" value={dataScpClass} onChange={(e) => setDataClass(e.target.value)} placeholder="Class" /> 
+        <br />
+        <input className="input-field" value={dataDescription} onChange={(e) => setDataDescription(e.target.value)} placeholder="Description" />
+        <br />
+        <input className="input-field" value={dataContainment} onChange={(e) => setDataContainment(e.target.value)} placeholder="Containment" />
+        <br />
+        <button className="button" onClick={crudCreate}>Create new document</button>
+        <button className="button" onClick={crudUpdate}>Update Document</button>
+      </div>
+
+      <div className="list-container">
         <ul>
           {readData.map((item) => (
             <li key={item.id}>
@@ -67,15 +95,16 @@ function CRUD() {
               Description: {item.description}
               <br />
               Containment: {item.containment}
+              <div>
+                <button className="button" onClick={() => crudDelete(item.id)}>Delete</button>
+                <button className="button" onClick={() => showEdit(item.id, item.Item, item.scpClass, item.description, item.containment)}>Edit</button>
+              </div>
             </li>
           ))}
         </ul>
       </div>
-
-      <div>
-      </div>
-    </>
-  )
+    </div>
+  );
 }
 
 export default CRUD;

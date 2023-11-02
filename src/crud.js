@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from './fbconfig';
-import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
+import {addDoc, collection, getDocs, deleteDoc, doc, updateDoc} from 'firebase/firestore';
+import {getStorage, ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage';
 
 function CRUD() {
   const [dataItem, setDataItem] = useState("");
@@ -15,7 +15,7 @@ function CRUD() {
   const [image, setImage] = useState(null);
   const [imageURL, setImageURL] = useState("");
 
-  const OurCollection = useMemo(() => collection(db, "subjects"), []);
+  const OurCollection = collection(db, "subjects"); 
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -52,7 +52,7 @@ function CRUD() {
         scpClass: dataScpClass,
         description: dataDescription,
         containment: dataContainment,
-        imageURL: imageURL 
+        imageURL: imageURL,
       });
 
       // Clear input fields after a successful create
@@ -60,7 +60,7 @@ function CRUD() {
       setDataClass("");
       setDataDescription("");
       setDataContainment("");
-      setImageURL(""); 
+      setImageURL("");
     } catch (error) {
       console.error("Error creating document:", error);
     }
@@ -80,7 +80,7 @@ function CRUD() {
       scpClass: dataScpClass,
       description: dataDescription,
       containment: dataContainment,
-      imageURL: imageURL 
+      imageURL: imageURL,
     });
   }
 
@@ -90,7 +90,7 @@ function CRUD() {
     setDataDescription(description);
     setDataContainment(containment);
     setId(id);
-    setImageURL(imageURL); 
+    setImageURL(imageURL);
   }
 
   useEffect(() => {
@@ -104,57 +104,90 @@ function CRUD() {
       }
     }
     getData();
-  }, []);
+  }, [OurCollection]); 
 
   return (
-    <div className="container">
-      <h1 className="header">SCP FILES</h1>
+      <div className="container">
+        <h1 className="header">SCP FILES</h1>
+    
+        <div className="input-container">
+  <input
+    className="input-field"
+    value={dataItem}
+    onChange={(e) => setDataItem(e.target.value)}
+    placeholder="Item"
+  />
+  <input
+    className="input-field"
+    value={dataScpClass}
+    onChange={(e) => setDataClass(e.target.value)}
+    placeholder="Class"
+  />
+  <input
+    className="input-field"
+    value={dataDescription}
+    onChange={(e) => setDataDescription(e.target.value)}
+    placeholder="Description"
+  />
+  <input
+    className="input-field"
+    value={dataContainment}
+    onChange={(e) => setDataContainment(e.target.value)}
+    placeholder="Containment"
+  />
 
-      <div className="input-container">
-        <input className="input-field" value={dataItem} onChange={(e) => setDataItem(e.target.value)} placeholder="Item" />
-        <input className="input-field" value={dataScpClass} onChange={(e) => setDataClass(e.target.value)} placeholder="Class" />
-        <input className="input-field" value={dataDescription} onChange={(e) => setDataDescription(e.target.value)} placeholder="Description" />
-        <input className="input-field" value={dataContainment} onChange={(e) => setDataContainment(e.target.value)} placeholder="Containment" />
+  <label htmlFor="fileInput" className="btn btn-secondary black-btn">
+    <i className="fas fa-upload" style={{ color: 'black' }}></i>
+  </label>
 
-        <div className="button-container">
-          <button className="button" onClick={crudCreate}>Create new document</button>
-          <button className="button" onClick={crudUpdate}>Update Document</button>
-          <button className="button" onClick={uploadImage}>Upload Image</button>
+  <input
+    className="form-control"
+    type="file"
+    id="fileInput"
+    style={{ display: 'none' }}
+    onChange={handleImageChange}
+  />
+
+  <button className="button" onClick={crudCreate}>
+    Create new document
+  </button>
+
+  <button className="button" onClick={crudUpdate}>
+    Update Document
+  </button>
+
+  <button className="button" onClick={uploadImage}>
+    Upload Image
+  </button>
+</div>
+
+    
+        <div className="list-container">
+          <ul>
+            {readData.map((item) => (
+              <li key={item.id}>
+                {item.Item} - {item.scpClass}
+                <br />
+                Description: {item.description}
+                <br />
+                Containment: {item.containment}
+    
+                {item.imageURL && (
+                  <div className="image-container">
+                    <img className="image" src={item.imageURL} alt={item.imageURL} />
+                  </div>
+                )}
+    
+                <div className="button-container">
+                  <button className="button" onClick={() => crudDelete(item.id)}>Delete</button>
+                  <button className="button" onClick={() => showEdit(item.id, item.Item, item.scpClass, item.description, item.containment, item.imageURL)}>Edit</button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-         
-        <label htmlFor="fileInput" className="btn btn-secondary black-btn">
-        <i className="fas fa-upload" style={{ color: 'black' }}></i>
-        </label>
-        <input className="form-control" type="file" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
- 
-         </div>
- 
-      <div className="list-container">
-        <ul>
-          {readData.map((item) => (
-            <li key={item.id}>
-              {item.Item} - {item.scpClass}
-              <br />
-              Description: {item.description}
-              <br />
-              Containment: {item.containment}
-
-              {item.imageURL && (
-          <div className="image-container">
-            <img className="image" src={item.imageURL} alt={item.imageURL} />
-          </div>
-        )}
-
-              <div className="button-container">
-                <button className="button" onClick={() => crudDelete(item.id)}>Delete</button>
-                <button className="button" onClick={() => showEdit(item.id, item.Item, item.scpClass, item.description, item.containment, item.imageURL)}>Edit</button>
-              </div>
-            </li>
-          ))}
-        </ul>
       </div>
-    </div>
-  );
+    );
 }
 
 export default CRUD;

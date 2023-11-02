@@ -6,8 +6,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css">
+
+
     <style>
-            body {
+         body {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,19 +18,42 @@
             background-color: #f0f0f0;
             font-family: 'Oswald', sans-serif;
         }
-    
+
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
         }
 
         .input-container, .list-container {
-            width: 1000px;
+            width: 100%;
+            max-width: 1000px;
             border: 1px solid #ccc;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin: 10px;
+        }
+
+        .header {
+            font-size: 30px;
+            margin: 10px 0;
+            background: linear-gradient(to bottom, #000000, #dedede);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-family: 'Lora', serif;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-field {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 5px;
         }
 
         .button {
@@ -43,32 +69,21 @@
         .button:hover {
             background-color: #555;
         }
-
-        .header {
-            font-size: 60px;
-            margin-bottom: 10px;
-            background: linear-gradient(to bottom, #000000, #dedede);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-family: 'Lora', serif;
-            text-align: center;
-            position: relative;
-            z-index: 1;
+       
+        .image {
+            max-width: 50%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
-
-        .input-field {
-            width: 970px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin: 5px;
+        @media (min-width: 768px) {
+            .header {
+                font-size: 60px;
+            }
         }
     </style>
 </head>
 <body>
-
         <div id="root"></div>
-
 </body>
 </html>
